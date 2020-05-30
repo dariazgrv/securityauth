@@ -1,23 +1,28 @@
-# 
-# from django.db import models
-# from django.contrib.auth.models import User
-# from django.db.models.signals import post_save
-# from django.dispatch import receiver
-#
-#
-# # Create your models here.
-#
-# class LoginInfo(models.Model):
-#     user = models.OneToOneField(User, on_delete=models.CASCADE)
-#     bio = models.TextField(max_length=500, blank=True)
-#     location = models.CharField(max_length=30, blank=True)
-#     birth_date = models.DateField(null=True, blank=True)
-#
-# @receiver(post_save, sender=User)
-# def create_user_profile(sender, instance, created, **kwargs):
-#     if created:
-#         Profile.objects.create(user=instance)
-#
-# @receiver(post_save, sender=User)
-# def save_user_profile(sender, instance, **kwargs):
-#     instance.profile.save()
+
+from django.db import models
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.contrib.auth import get_user_model
+
+from phonenumber_field.modelfields import PhoneNumberField
+from django.core.validators import RegexValidator
+
+# Create your models here.
+
+class LoginInfo(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    ip = models.CharField(max_length=60,blank=True)
+    city = models.CharField(max_length=60,blank=True)
+    latitude = models.FloatField(null=True, blank=True, default=None)
+    longitude = models.FloatField(null=True, blank=True, default=None)
+    phonenumber = models.CharField(null=True,max_length=17, blank=True,default=None)  # validators should be a list
+
+@receiver(post_save, sender=User)
+def create_user_loginInfo(sender, instance, created, **kwargs):
+    if created:
+        LoginInfo.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_user_loginInfo(sender, instance, **kwargs):
+    instance.logininfo.save()
