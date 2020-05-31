@@ -26,7 +26,7 @@ SECRET_KEY = 'rfrd2ba3o(q@&in^e8-&94aycj_5ru-$0y^5%!k-cnfnmi+5_7'
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['adaptiveauth.herokuapp.com']
 
