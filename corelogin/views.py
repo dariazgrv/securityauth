@@ -61,7 +61,7 @@ def calculate_time_between_logins(now,last_login):
 
 
 def calculate_score_of_trust(ip,username):
-        #get_client_city(ip)
+        get_client_city(ip)
         user = User.objects.get(username=username)
 
         risk_score = 0
@@ -147,8 +147,7 @@ def corelogin(request):
                         # If the password is invalid, authenticate() returns None
 
                         get_client_last_login(username=username)
-                        #risk_score = calculate_score_of_trust(ip,username)
-                        risk_score = 40
+                        risk_score = calculate_score_of_trust(ip,username)
                         print("risk score iiiis: ", risk_score)
 
                         if user is not None:
