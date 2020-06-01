@@ -28,7 +28,7 @@ def get_client_ip(request):
         x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
         if x_forwarded_for:
                 ip = x_forwarded_for.split(',')[0]
-                # print(ip)
+                print(ip)
         else:
                 ip = request.META.get('REMOTE_ADDR')
                 
@@ -39,7 +39,7 @@ def get_client_city(ip):
         # lat,long = g.lat_lon('84.117.7.56')
         # print(lat)
         # print(long)
-        city = g.city('84.117.7.56')
+        city = g.city(ip)
         print(city)
 
         return city
@@ -122,16 +122,16 @@ def calculate_lat_long_distance(lat1,lon1,lat2,lon2):
 
 def corelogin(request):
         ip = get_client_ip(request)
-        allowed_IPs = ['192.168.10.10','127.0.0.1']
+        #allowed_IPs = ['192.168.10.10','127.0.0.1']
         #print(ip)
 
-        lat1 = 44.409771
-        lon1 = 26.123591
-        lat2 = 44.452691
-        lon2 = 26.085998
-
-        print("The distance is: ")
-        print(calculate_lat_long_distance(lat1,lon1,lat2,lon2))
+        # lat1 = 44.409771
+        # lon1 = 26.123591
+        # lat2 = 44.452691
+        # lon2 = 26.085998
+        #
+        # print("The distance is: ")
+        # print(calculate_lat_long_distance(lat1,lon1,lat2,lon2))
 
         # get_client_city(ip)
         # get_client_last_login(request)
