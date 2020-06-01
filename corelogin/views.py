@@ -198,6 +198,9 @@ def securelogin(request,username,secureCode):
         # print(type(code))
         # print("Code is",code)
 
+        ip = get_client_ip(request)
+        city = get_client_city(ip)
+
 
         if request.method == 'POST':
 
@@ -208,6 +211,12 @@ def securelogin(request,username,secureCode):
                         print(code)
                         if code == secureCode:
                                 print(user.username)
+                                user.logininfo.ip = ip
+                                user.logininfo.latitude = city["latitude"]
+                                user.logininfo.longitude = city["longitude"]
+                                user.logininfo.city = city["city"]
+                                user.logininfo.save()
+
                                 login(request, user)
                                 return redirect("/")
 
