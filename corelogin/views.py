@@ -13,6 +13,7 @@ from datetime import timedelta
 from django.core.signing import TimestampSigner
 import base64
 from Crypto.Cipher import AES
+import shodan
 
 # Create your views here.
 
@@ -25,10 +26,15 @@ def generate_secure_code():
         return code
 
 def get_client_ip(request):
+        api = shodan.Shodan('Ppv7mH72xsimqNde3Vq2MgaDyGEtScFm')
         x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
         if x_forwarded_for:
                 ip = x_forwarded_for.split(',')[0]
                 print(ip)
+                ipinfo = api.host(ip)
+                if 'tags' in ipinfo and 'vpn' in ipinfo['tags']:
+                        print('{} is connecting from VPN'.format(ip))
+
         else:
                 ip = request.META.get('REMOTE_ADDR')
                 

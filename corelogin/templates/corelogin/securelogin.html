@@ -8,8 +8,8 @@
 </head>
 <body onload="load()">
 
- <h2>2 Factor Auth</h2>
-  <form method="post">
+ <h2 style="text-align: center">2 Factor Auth</h2>
+  <form style="text-align: center" method="post">
     {% csrf_token %}
     <label>Enter the code: </label>
     <input id="code" name="Code" type="text" >
@@ -17,7 +17,7 @@
   </form>
 
 
-<span id="timer"></span>
+<span id="timer" style="text-align: center"></span>
 
 
 

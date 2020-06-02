@@ -3,8 +3,8 @@
 {% block title %}Create an Account{% endblock %}
 
 {% block content %}
-  <h2>Sign up</h2>
-  <div class="container">
+  <h2 style="text-align: center">Sign up</h2>
+  <div class="container" style="padding: 30px;">
   <form method="post">
     {% csrf_token %}
     {% for field in form %}
@@ -20,7 +20,7 @@
       </p>
     {% endfor %}
     {{ phone_form.as_p}}
-    <button type="submit">Sign up</button>
+    <button type="submit" style="background-color: palegreen">Sign up</button>
   </form>
 </div>
 {% endblock %}
