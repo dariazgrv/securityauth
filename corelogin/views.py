@@ -59,7 +59,7 @@ def get_client_last_login(username):
         # print('Hour is: ',last_login.hour)
         if last_login is not None:
                 return last_login
-        else
+        else:
                 return timezone.now()
         #should add a more elaborate comparison
 
