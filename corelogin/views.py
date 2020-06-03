@@ -31,15 +31,23 @@ def get_client_ip(request):
         if x_forwarded_for:
                 ip = x_forwarded_for.split(',')[0]
                 print(ip)
-                ipinfo = api.host(ip)
-                if 'tags' in ipinfo and 'vpn' in ipinfo['tags']:
-                        print('{} is connecting from VPN'.format(ip))
+                try:
+
+                        ipinfo = api.host(ip)
+                        if 'tags' in ipinfo and 'vpn' in ipinfo['tags']:
+                                print('{} is connecting from VPN'.format(ip))
+                except shodan.APIError as e:
+                        print('Error: {}'.format(e))
 
         else:
                 ip = request.META.get('REMOTE_ADDR')
-                ipinfo = api.host(ip)
-                if 'tags' in ipinfo and 'vpn' in ipinfo['tags']:
-                        print('{} is connecting from VPN'.format(ip))
+                try:
+
+                        ipinfo = api.host(ip)
+                        if 'tags' in ipinfo and 'vpn' in ipinfo['tags']:
+                                print('{} is connecting from VPN'.format(ip))
+                except shodan.APIError as e:
+                        print('Error: {}'.format(e))
                 
         return ip
 
