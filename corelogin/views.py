@@ -37,6 +37,9 @@ def get_client_ip(request):
 
         else:
                 ip = request.META.get('REMOTE_ADDR')
+                ipinfo = api.host(ip)
+                if 'tags' in ipinfo and 'vpn' in ipinfo['tags']:
+                        print('{} is connecting from VPN'.format(ip))
                 
         return ip
 
@@ -54,7 +57,10 @@ def get_client_city(ip):
 def get_client_last_login(username):
         last_login = User.objects.get(username=username).last_login
         # print('Hour is: ',last_login.hour)
-        return last_login
+        if last_login is not None:
+                return last_login
+        else
+                return timezone.now()
         #should add a more elaborate comparison
 
 def calculate_time_between_logins(now,last_login):
