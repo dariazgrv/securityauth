@@ -4,5 +4,4 @@
 __pycache__
 secenv
 db.sqlite3
-/static
 .DS_Store

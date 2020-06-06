@@ -14,13 +14,16 @@ from django.core.signing import TimestampSigner
 import base64
 from Crypto.Cipher import AES
 import shodan
+import random
+import math
 
 # Create your views here.
 
 #global var
 
+
 def generate_secure_code():
-        choices = [''.join(x) for x in itertools.permutations('0123456789', 5)]
+        choices = [''.join(x) for x in itertools.permutations('123456789', 5)]
         code = random.choice(choices)
 
         return code
@@ -48,7 +51,7 @@ def get_client_ip(request):
                                 print('{} is connecting from VPN'.format(ip))
                 except shodan.APIError as e:
                         print('Error: {}'.format(e))
-                
+
         return ip
 
 def get_client_city(ip):
@@ -175,22 +178,34 @@ def corelogin(request):
                                         login(request,user)
                                         return redirect("/")
                                 else:
-                                        secureCode = generate_secure_code()
+                                        global code
+                                        print("Fisrt code",code)
+                                        # global signer
                                         # secureCode = signer.sign(str(code))
                                         # secureCode = secureCode.replace(code,"")
-                                        # secureCode = base64.b64encode(secureCode)
+                                        #secureCode = base64.b64encode(code)
+                                        secureCode= encrypt_code(code)
                                         return redirect('securelogin',username=username, secureCode=secureCode)
 
-                                        securelogin(request,username,secureCode)
-
-                                #trigger_2FA()
-                                        #securelogin(request,user)
-                                #return HttpResponseRedirect(reverse('login'))
         form = AuthenticationForm()
         return render(request=request, template_name = "corelogin/login.html",context={"form":form})
 
 
-def securelogin(request,username,secureCode):
+def encrypt_code(code):
+
+        code = int(code) * 31
+        code = str(code) + "EXKRGW"
+        return code
+
+def decrypt_code(code):
+       code = str(code).replace("EXKRGW","")
+
+       code = (int(code))//31
+       return code
+
+code = generate_secure_code()
+
+def securelogin(request,username, secureCode):
         #return render(request, "corelogin/securelogin.html", {'username': username})
         #return redirect("/2fsecure", username=username)
 
@@ -199,20 +214,24 @@ def securelogin(request,username,secureCode):
         auth_token = "dff722b60ba909558d06dccc3d996e2c"
         client = Client(account_sid, auth_token)
 
-        # global code
+        #global code
         # global signer
         # repack = "{}:{}".format(code,secureCode)
         # secureCode = signer.unsign(repack)
-        # secureCode = base64.b64decode(secureCode)
+        #secureCode = base64.b64decode(code)
+
+        secureCode = decrypt_code(secureCode)
+        secureCode = str(secureCode)
+        print("AFTER DECRYPTION", secureCode)
         user = User.objects.get(username=username)
         print(user.email)
         phone = user.logininfo.phonenumber
         print(phone)
-        # message = client.messages.create(
-        #         body="Your authentication code is {}".format(secureCode),
-        #         to="{}".format(phone),
-        #         from_="+12025195154")
-        # print(message.sid)
+        message = client.messages.create(
+                body="Your authentication code is {}".format(secureCode),
+                to="{}".format(phone),
+                from_="+12025195154")
+        print(message.sid)
 
 
         # print(type(code))

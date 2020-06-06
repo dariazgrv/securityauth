@@ -6,20 +6,22 @@
 
 
 </head>
-<body onload="load()">
-
+<body onload="load()" style="font-family: 'American Typewriter'">
+<div style="text-align: center">
+ <div style="display: inline-block">
  <h2 style="text-align: center">2 Factor Auth</h2>
   <form style="text-align: center" method="post">
     {% csrf_token %}
     <label>Enter the code: </label>
     <input id="code" name="Code" type="text" >
-    <button type="submit">Verify</button>
+    <button type="submit" style="background-color: #ddffdd; border-color: white; font-family: monospace">Verify</button>
   </form>
+ <p>We've sent a code to the phone number you have provided.</p>
+ <br>
 
-
-<span id="timer" style="text-align: center"></span>
-
-
+<span id="timer" style=""></span>
+</div>
+    </div>
 
 <script type="text/javascript">
 function checklength(i) {
