@@ -67,11 +67,12 @@ def get_client_city(ip):
 
 def get_client_last_login(username):
         last_login = User.objects.get(username=username).last_login
+        date_joined = User.objects.get(username=username).date_joined
         # print('Hour is: ',last_login.hour)
         if last_login is not None:
                 return last_login
         else:
-                return timezone.now()
+                return date_joined
         #should add a more elaborate comparison
 
 def calculate_time_between_logins(now,last_login):
