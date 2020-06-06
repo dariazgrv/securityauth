@@ -60,7 +60,7 @@ def get_client_city(ip):
         # lat,long = g.lat_lon('84.117.7.56')
         # print(lat)
         # print(long)
-        city = g.city('84.117.7.56')
+        city = g.city(ip)
         # print(city["latitude"])
         
         return city
