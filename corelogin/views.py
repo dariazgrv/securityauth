@@ -80,7 +80,7 @@ def calculate_time_between_logins(now,last_login):
 
         date_time_difference = now - last_login
         date_time_difference_in_minutes = date_time_difference.seconds / 3600
-        print(date_time_difference_in_minutes)
+        print("Diferenta in minute dintre login-uri: ",date_time_difference_in_minutes)
         return date_time_difference_in_minutes
 
 

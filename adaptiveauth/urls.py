@@ -25,5 +25,5 @@ urlpatterns = [
     path('', include("main.urls")),
     path('', include("corelogin.urls")),
 
-] 
+]
 
