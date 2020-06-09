@@ -79,9 +79,9 @@ def calculate_time_between_logins(now,last_login):
 
 
         date_time_difference = now - last_login
-        date_time_difference_in_minutes = date_time_difference.seconds / 360
-        print("Diferenta in minute dintre login-uri: ",date_time_difference_in_minutes)
-        return date_time_difference_in_minutes
+        date_time_difference_in_hours = date_time_difference.seconds / 360
+        print("Diferenta in ore dintre login-uri: ",date_time_difference_in_hours)
+        return date_time_difference_in_hours
 
 
 def calculate_score_of_trust(ip,username):
@@ -156,14 +156,14 @@ def can_user_trave_by_google_maps_estimations(lat1,lon1,lat2,lon2,distance,time_
         kms = kms * 0.001 #transformam metri in km
         time_estimated = time_estimated/60 #transformam din secunde in minute
 
-        print("Timpul estimat de Google Maps este: ", time_estimated)
-        print("Distanta este: ", distance)
-        print("Distanta calculata de Google Maps este: ", kms)
+        print("Timpul estimat de Google Maps in ore este: ", time_estimated/60)
+        print("Distanta in km este: ", distance)
+        print("Distanta in km calculata de Google Maps este: ", kms)
         print("Timpul dintre loginuri este:", time_between_logins)
 
-        if distance - kms in range(-10,10) and time_between_logins < time_estimated:
-                return False
-        return True
+        if distance - kms in range(-10,10) and time_between_logins > time_estimated:
+                return True
+        return False
 
 
 
