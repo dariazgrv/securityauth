@@ -161,7 +161,7 @@ def can_user_trave_by_google_maps_estimations(lat1,lon1,lat2,lon2,distance,time_
         print("Distanta in km calculata de Google Maps este: ", kms)
         print("Timpul dintre loginuri este:", time_between_logins)
 
-        if distance - kms in range(-10,10) and time_between_logins > time_estimated:
+        if distance - kms in range(-10,10) and time_between_logins >= time_estimated:
                 return True
         return False
 
