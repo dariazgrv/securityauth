@@ -144,8 +144,8 @@ def can_user_trave_by_google_maps_estimations(lat1,lon1,lat2,lon2,distance,time_
         # url variable store url
         url = 'https://maps.googleapis.com/maps/api/distancematrix/json?'
 
-        r = requests.get(url + 'origins=' + lat1 + ',' + lon1 +
-                         '&destinations=' + lat2 + ',' + lon2 +
+        r = requests.get(url + 'origins=' + str(lat1) + ',' + str(lon1) +
+                         '&destinations=' + str(lat2) + ',' + str(lon2) +
                          '&key=' + api_key)
 
         response_dict = r.json()
