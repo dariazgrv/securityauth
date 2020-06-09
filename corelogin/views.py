@@ -15,7 +15,7 @@ import base64
 from Crypto.Cipher import AES
 import shodan
 import random
-import math
+import requests, json
 
 # Create your views here.
 
@@ -113,14 +113,14 @@ def calculate_score_of_trust(ip,username):
                         distance = calculate_lat_long_distance(current_lat,current_lon,previous_lat,previous_lon)
                         if distance > 100: #daca distanta e mai mare de 100km
                                 risk_score = risk_score + 10 #riscul creste cu +10
-                                possible = can_user_travel_there_in_that_amonut_of_time(distance, time_between_logins)
+                                possible = can_user_trave_by_google_maps_estimations(current_lat,current_lon,previous_lat,previous_lon,distance,time_between_logins)
                                 #verificam daca era era posibil sa ajunga acolo in timpul dat
                                 if possible == False: #iar daca nu era posibil fizic
                                         #trigger_2FA() il obligam sa se logheze prin 2FA
                                         risk_score = risk_score + 10 #pana acum ajunge la maxim 40 ?
                 else:
                         distance = calculate_lat_long_distance(current_lat, current_lon, previous_lat, previous_lon)
-                        possible = can_user_travel_there_in_that_amonut_of_time(distance,time_between_logins)
+                        possible = can_user_trave_by_google_maps_estimations(current_lat,current_lon,previous_lat,previous_lon,distance,time_between_logins)
                         if possible == False:
                                 risk_score = risk_score + 10
 
@@ -137,6 +137,30 @@ def can_user_travel_there_in_that_amonut_of_time(distance,time_between_logins):
         if distance > 1000 and time_between_logins > 24:
                 return True
         return False
+
+def can_user_trave_by_google_maps_estimations(lat1,lon1,lat2,lon2,distance,time_between_logins):
+        api_key = 'AIzaSyCXgLbShg74qsdoOwpiP-TQkbWJsZBqd94'
+
+        # url variable store url
+        url = 'https://maps.googleapis.com/maps/api/distancematrix/json?'
+
+        r = requests.get(url + 'origins=' + lat1 + ',' + lon1 +
+                         '&destinations=' + lat2 + ',' + lon2 +
+                         '&key=' + api_key)
+
+        response_dict = r.json()
+
+        kms = response_dict['rows'][0]['elements'][0]['distance']['value']
+        time_estimated = response_dict['rows'][0]['elements'][0]['duration']['value']
+
+        kms = kms * 0.001 #transformam metri in km
+        time_estimated = time_estimated/60 #transformam din secunde in minute
+
+        if distance - kms in range(-10,10) and time_between_logins < time_estimated:
+                return False
+        return True
+
+
 
 def calculate_lat_long_distance(lat1,lon1,lat2,lon2):
         #using Haversine formula
@@ -172,7 +196,7 @@ def corelogin(request):
 
                         get_client_last_login(username=username)
                         risk_score = calculate_score_of_trust(ip,username)
-                        print("risk score iiiis: ", risk_score)
+                        print(username,"has a risk score of: ", risk_score)
 
                         if user is not None:
                                 if risk_score < 20:
@@ -228,11 +252,11 @@ def securelogin(request,username, secureCode):
         print(user.email)
         phone = user.logininfo.phonenumber
         print(phone)
-        message = client.messages.create(
-                body="Your authentication code is {}".format(secureCode),
-                to="{}".format(phone),
-                from_="+12025195154")
-        print(message.sid)
+        # message = client.messages.create(
+        #         body="Your authentication code is {}".format(secureCode),
+        #         to="{}".format(phone),
+        #         from_="+12025195154")
+        # print(message.sid)
 
 
         # print(type(code))
@@ -244,7 +268,7 @@ def securelogin(request,username, secureCode):
 
         if request.method == 'POST':
 
-                print("generated secure code is", secureCode)
+                print("Generated secure code is", secureCode)
                 if secureCode is not None:
                         login_data = request.POST.dict()
                         code = login_data.get('Code')
