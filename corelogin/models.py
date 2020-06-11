@@ -11,7 +11,7 @@ from django.core.validators import RegexValidator
 # Create your models here.
 
 class LoginInfo(models.Model):
-    username = models.ForeignKey(User, to_field="username",db_column="username",on_delete=models.CASCADE)
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
     ip = models.CharField(max_length=60,blank=True)
     city = models.CharField(max_length=60,blank=True)
     latitude = models.FloatField(null=True, blank=True, default=None)
