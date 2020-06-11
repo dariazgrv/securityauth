@@ -105,7 +105,7 @@ def calculate_score_of_trust(ip,username):
         
         if current_city != previous_city : #daca orasul curent difera de cel anterior
                 risk_score = risk_score + 10 #avem deja un risc de +10
-                if time_between_logins < 2: #daca timpul intre login-uri este mai mic de 2 ore
+                if time_between_logins < 2: #daca timpul intre login-uri este mai mic de 2 minute
                         # inseamnca ca intr-un timp scurt userul a incercat sa se logheze din 2
                         # orase diferite, deci riscul creste cu +10
                         risk_score = risk_score + 10
