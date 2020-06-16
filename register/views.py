@@ -10,8 +10,9 @@ from corelogin.models import LoginInfo
 
 def register(request):
     ip = get_client_ip(request)
+    #ip = '84.117.7.60' #uncommnet for localhost
     city = get_client_city(ip)
-    
+
     if request.method == "POST":
         form = RegisterForm(request.POST)
         phone_form  = ExtraInfo(request.POST)
@@ -19,15 +20,30 @@ def register(request):
             form.save()
             id = User.objects.latest('id').id
             user = User.objects.get(pk=id)
-            print(user)
-            user.logininfo.ip = ip
-            print("This is the iiiiiip: ",user.logininfo.ip)
-            user.logininfo.latitude = city["latitude"]
-            user.logininfo.longitude = city["longitude"]
-            user.logininfo.city = city["city"]
-            user.logininfo.phonenumber = phone_form.cleaned_data.get('phonenumber')
-            user.logininfo.save()
             user.save()
+            print(user)
+
+            #device,os,browser info
+            device = request.user_agent.device.family
+            os = request.user_agent.os.family
+            browser = request.user_agent.browser.family
+
+            fingerprint_tuple = (device,os,browser)
+            print(fingerprint_tuple)
+            fingerprint = hash(fingerprint_tuple)
+            print(fingerprint)
+
+            l = LoginInfo()
+
+            l.user = user
+            l.ip = ip
+            l.latitude = city["latitude"]
+            l.longitude = city["longitude"]
+            l.city = city["city"]
+            l.phonenumber = phone_form.cleaned_data.get('phonenumber')
+            l.fingerprint = fingerprint_tuple
+            l.save()
+
             #phone_form.save()
             # logininfo = form.save(commit=False)
             # logininfo.user = request.user
@@ -52,7 +68,8 @@ def get_client_ip(request):
                 # print(ip)
         else:
                 ip = request.META.get('REMOTE_ADDR')
-               
+
+
         return ip
 
 def get_client_city(ip):
@@ -60,6 +77,7 @@ def get_client_city(ip):
         # lat,long = g.lat_lon('84.117.7.56')
         # print(lat)
         # print(long)
+        # city = g.city('84.117.7.60')  #uncomment for localhost
         city = g.city(ip)
         # print(city["latitude"])
         

@@ -16,14 +16,8 @@ class LoginInfo(models.Model):
     city = models.CharField(max_length=60,blank=True)
     latitude = models.FloatField(null=True, blank=True, default=None)
     longitude = models.FloatField(null=True, blank=True, default=None)
-    phonenumber = models.CharField(null=True,max_length=17, blank=True,default=None)  # validators should be a list
+    phonenumber = models.CharField(null=True,max_length=17, blank=False,default=None)
     verified = models.BooleanField(null=True,default=False)
+    fingerprint = models.CharField(max_length=64,blank=True,null=True)
 
-@receiver(post_save, sender=User)
-def create_user_loginInfo(sender, instance, created, **kwargs):
-    if created:
-        LoginInfo.objects.create(user=instance)
 
-@receiver(post_save, sender=User)
-def save_user_loginInfo(sender, instance, **kwargs):
-    instance.logininfo.save()

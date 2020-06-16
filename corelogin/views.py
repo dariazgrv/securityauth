@@ -16,10 +16,13 @@ from Crypto.Cipher import AES
 import shodan
 import random
 import requests, json
+from main.models import Limit, ForbiddenIP
+
 
 # Create your views here.
 
 #global var
+from corelogin.models import LoginInfo
 
 
 def generate_secure_code():
@@ -84,9 +87,10 @@ def calculate_time_between_logins(now,last_login):
         return date_time_difference_in_minutes
 
 
-def calculate_score_of_trust(ip,username):
+def calculate_score_of_trust(ip,username,limit):
         get_client_city(ip)
         user = User.objects.get(username=username)
+        print("WWwWWWWW USER IS", user)
 
         risk_score = 0
 
@@ -94,39 +98,62 @@ def calculate_score_of_trust(ip,username):
         #now = datetime.datetime.now() #get current time of login attempt
         last_login = get_client_last_login(username)  # get last login time
 
-        previous_city = user.logininfo.city
+        previous_city = LoginInfo.objects.values('city').filter(user=user).latest('city')['city']
+
+        print("THE PREV CITY IIIIIIIIIIISSS", previous_city)
         current_city = get_client_city(ip)["city"]
+        print(current_city)
         current_lat = get_client_city(ip)["latitude"]
         current_lon = get_client_city(ip)["longitude"]
 
-        previous_lat = user.logininfo.latitude
-        previous_lon = user.logininfo.longitude
+        previous_lat = LoginInfo.objects.values('latitude').filter(user=user).earliest('latitude')['latitude']
+        print("prev lat ", previous_lat)
+        previous_lon = LoginInfo.objects.values('longitude').filter(user=user).earliest('longitude')['longitude']
+        print("prev lon", previous_lon)
         time_between_logins = calculate_time_between_logins(now,last_login)
-        
-        if current_city != previous_city : #daca orasul curent difera de cel anterior
-                risk_score = risk_score + 10 #avem deja un risc de +10
-                if time_between_logins < 2: #daca timpul intre login-uri este mai mic de 2 minute
-                        # inseamnca ca intr-un timp scurt userul a incercat sa se logheze din 2
-                        # orase diferite, deci riscul creste cu +10
+
+        distance = calculate_lat_long_distance(current_lat, current_lon, previous_lat, previous_lon)
+
+        possible = can_user_trave_by_google_maps_estimations(current_lat, current_lon, previous_lat, previous_lon,
+                                                             distance, time_between_logins)
+
+        forbidden = ForbiddenIP.objects.filter(forbiddenIP=ip).exists()
+
+
+        if forbidden == True:
+                risk_score = risk_score + 10
+                if possible == False:
                         risk_score = risk_score + 10
-                        #deci vom calcula distanta, pt a vedea daca e posibil sa ajunga de la o locatia la alta in timpul dat
-                        distance = calculate_lat_long_distance(current_lat,current_lon,previous_lat,previous_lon)
-                        if distance > 100: #daca distanta e mai mare de 100km
-                                risk_score = risk_score + 10 #riscul creste cu +10
-                                possible = can_user_trave_by_google_maps_estimations(current_lat,current_lon,previous_lat,previous_lon,distance,time_between_logins)
-                                #verificam daca era era posibil sa ajunga acolo in timpul dat
-                                if possible == False: #iar daca nu era posibil fizic
-                                        #trigger_2FA() il obligam sa se logheze prin 2FA
-                                        risk_score = risk_score + 10 #pana acum ajunge la maxim 40 ?
-                else:
-                        distance = calculate_lat_long_distance(current_lat, current_lon, previous_lat, previous_lon)
-                        possible = can_user_trave_by_google_maps_estimations(current_lat,current_lon,previous_lat,previous_lon,distance,time_between_logins)
-                        if possible == False:
+                        if time_between_logins < limit:
+
                                 risk_score = risk_score + 10
-
-
         else:
                 risk_score = 0
+
+        # if current_city != previous_city : #daca orasul curent difera de cel anterior
+        #         risk_score = risk_score + 10 #avem deja un risc de +10
+        #         if time_between_logins < limit: #daca timpul intre login-uri este mai mic de 2 minute
+        #                 # inseamnca ca intr-un timp scurt userul a incercat sa se logheze din 2
+        #                 # orase diferite, deci riscul creste cu +10
+        #                 risk_score = risk_score + 10
+        #                 #deci vom calcula distanta, pt a vedea daca e posibil sa ajunga de la o locatia la alta in timpul dat
+        #                 distance = calculate_lat_long_distance(current_lat,current_lon,previous_lat,previous_lon)
+        #                 if distance > 100: #daca distanta e mai mare de 100km
+        #                         risk_score = risk_score + 10 #riscul creste cu +10
+        #                         possible = can_user_trave_by_google_maps_estimations(current_lat,current_lon,previous_lat,previous_lon,distance,time_between_logins)
+        #                         #verificam daca era era posibil sa ajunga acolo in timpul dat
+        #                         if possible == False: #iar daca nu era posibil fizic
+        #                                 #trigger_2FA() il obligam sa se logheze prin 2FA
+        #                                 risk_score = risk_score + 10 #pana acum ajunge la maxim 40 ?
+        #         else:
+        #                 distance = calculate_lat_long_distance(current_lat, current_lon, previous_lat, previous_lon)
+        #                 possible = can_user_trave_by_google_maps_estimations(current_lat,current_lon,previous_lat,previous_lon,distance,time_between_logins)
+        #                 if possible == False:
+        #                         risk_score = risk_score + 10
+        #
+        #
+        # else:
+        #         risk_score = 0
 
         return risk_score
 
@@ -177,17 +204,11 @@ def corelogin(request):
         ip = get_client_ip(request)
         #allowed_IPs = ['192.168.10.10','127.0.0.1']
         #print(ip)
-
-        # lat1 = 44.409771
-        # lon1 = 26.123591
-        # lat2 = 44.452691
-        # lon2 = 26.085998
-        #
-        # print("The distance is: ")
-        # print(calculate_lat_long_distance(lat1,lon1,lat2,lon2))
+        # ip = '195.181.167.148' #uncomment for locahost
 
         # get_client_city(ip)
         # get_client_last_login(request)
+        city = get_client_city(ip)
 
         if request.method == 'POST':
                 form = AuthenticationForm(request=request, data=request.POST)
@@ -200,16 +221,48 @@ def corelogin(request):
                         # If the password is invalid, authenticate() returns None
 
                         get_client_last_login(username=username)
-                        risk_score = calculate_score_of_trust(ip,username)
+                        limit = Limit.objects.get(id=1).timelimit
+                        print("TIme limit set by admin is: ",limit)
+                        risk_score = calculate_score_of_trust(ip,username,limit)
                         print(username,"has a risk score of: ", risk_score)
 
                         if user is not None:
-                                if risk_score < 20:
+
+                                # device,os,browser info
+                                device = request.user_agent.device.family
+                                os = request.user_agent.os.family
+                                browser = request.user_agent.browser.family
+
+
+                                user_fingerprint = LoginInfo.objects.values('fingerprint').filter(user=user).latest('fingerprint')['fingerprint']
+                                print(user_fingerprint)
+                                fingerprint_tuple = (device, os, browser)
+                                print(fingerprint_tuple)
+                                fingerprint = hash(fingerprint_tuple)
+
+
+                                if user_fingerprint == fingerprint_tuple:
+                                        print("User device,os,browser is the same")
+                                else:
+                                        print("Fingerprint for this device", fingerprint)
+                                #fingerprint END #####
+
+                                if risk_score == 0:
+
                                         login(request,user)
+
+                                        l = LoginInfo()
+
+                                        l.user = user
+                                        l.ip = ip
+                                        l.latitude = city["latitude"]
+                                        l.longitude = city["longitude"]
+                                        l.city = city["city"]
+                                        l.save()
                                         return redirect("/")
                                 else:
                                         global code
-                                        print("Fisrt code",code)
+                                        print("First code",code)
                                         # global signer
                                         # secureCode = signer.sign(str(code))
                                         # secureCode = secureCode.replace(code,"")
@@ -255,13 +308,16 @@ def securelogin(request,username, secureCode):
         print("AFTER DECRYPTION", secureCode)
         user = User.objects.get(username=username)
         print(user.email)
-        phone = user.logininfo.phonenumber
+
+        id = User.objects.get(username=username).id
+        user_id = User.objects.get(pk=id)
+        phone = LoginInfo.objects.values('phonenumber').filter(user=user).latest('phonenumber')['phonenumber']
         print(phone)
-        message = client.messages.create(
-                body="Your authentication code is {}".format(secureCode),
-                to="{}".format(phone),
-                from_="+12025195154")
-        print(message.sid)
+        # message = client.messages.create(
+        #         body="Your authentication code is {}".format(secureCode),
+        #         to="{}".format(phone),
+        #         from_="+12025195154")
+        # print(message.sid)
 
 
         # print(type(code))
@@ -280,11 +336,13 @@ def securelogin(request,username, secureCode):
                         print(code)
                         if code == secureCode:
                                 print(user.username)
-                                user.logininfo.ip = ip
-                                user.logininfo.latitude = city["latitude"]
-                                user.logininfo.longitude = city["longitude"]
-                                user.logininfo.city = city["city"]
-                                user.logininfo.save()
+                                l = LoginInfo()
+                                l.user = user
+                                l.ip = ip
+                                l.latitude = city["latitude"]
+                                l.longitude = city["longitude"]
+                                l.city = city["city"]
+                                l.save()
 
                                 login(request, user)
                                 return redirect("/")

@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'main.apps.MainConfig',
     'corelogin.apps.CoreloginConfig',
     'register.apps.RegisterConfig',
+    'django_user_agents',
+    'BruteBuster',
 
 ]
 
@@ -56,6 +58,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_otp.middleware.OTPMiddleware',
+    'django_user_agents.middleware.UserAgentMiddleware',
+    'BruteBuster.middleware.RequestMiddleware',
+
 
 ]
 
@@ -146,7 +151,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
