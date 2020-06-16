@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     'corelogin.apps.CoreloginConfig',
     'register.apps.RegisterConfig',
     'django_user_agents',
-    'BruteBuster',
 
 ]
 
@@ -59,7 +58,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_otp.middleware.OTPMiddleware',
     'django_user_agents.middleware.UserAgentMiddleware',
-    'BruteBuster.middleware.RequestMiddleware',
 
 
 ]
