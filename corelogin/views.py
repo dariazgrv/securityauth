@@ -122,11 +122,11 @@ def calculate_score_of_trust(ip,username,limit):
 
         if forbidden == True:
                 risk_score = risk_score + 10
-                if possible == False:
-                        risk_score = risk_score + 10
-                        if time_between_logins < limit:
 
-                                risk_score = risk_score + 10
+        if possible == False:
+                risk_score = risk_score + 10
+                if time_between_logins < limit:
+                        risk_score = risk_score + 10
         else:
                 risk_score = 0
 
