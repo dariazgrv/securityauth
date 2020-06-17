@@ -4,7 +4,7 @@ from django.contrib.gis.geoip2 import GeoIP2
 from django.contrib.auth.models import User
 
 from corelogin.models import LoginInfo
-
+import hashlib
 
 # Create your views here.
 
@@ -30,7 +30,7 @@ def register(request):
 
             fingerprint_tuple = (device,os,browser)
             print(fingerprint_tuple)
-            fingerprint = hash(fingerprint_tuple)
+            fingerprint = hashlib.sha256(str(fingerprint_tuple).encode('utf-8')).hexdigest()
             print(fingerprint)
 
             l = LoginInfo()
