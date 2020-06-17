@@ -243,7 +243,7 @@ def corelogin(request):
                                 fingerprint = hashlib.sha256(str(fingerprint_tuple).encode('utf-8')).hexdigest()
 
 
-                                if user_fingerprint == fingerprint_tuple:
+                                if user_fingerprint == fingerprint:
                                         print("User device,os,browser is the same")
                                 else:
                                         print("Fingerprint for this device", fingerprint)
