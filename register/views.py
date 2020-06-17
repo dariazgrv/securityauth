@@ -41,7 +41,7 @@ def register(request):
             l.longitude = city["longitude"]
             l.city = city["city"]
             l.phonenumber = phone_form.cleaned_data.get('phonenumber')
-            l.fingerprint = fingerprint_tuple
+            l.fingerprint = fingerprint
             l.save()
 
             #phone_form.save()
