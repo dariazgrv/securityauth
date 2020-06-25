@@ -1,24 +1,25 @@
 {% load static %}
+
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
+     <meta charset="utf-8">
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
-<title>2 Factor Auth</title>
+<title>Confirm phone</title>
 
 
 </head>
-<body class="cover" onload="load()" style="font-family: 'American Typewriter'">
-<div id="secure2fa" style="text-align: center">
+<body onload="load()" style="font-family: 'American Typewriter'">
+<div style="text-align: center">
  <div style="display: inline-block">
- <h2 id="def" style="text-align: center">2 Factor Auth</h2>
+ <h2 id="def" style="text-align: center">Confirm your phone number</h2>
   <form style="text-align: center" method="post">
     {% csrf_token %}
-    <label>Enter the code: </label>
+    <label>Your confirmation code: </label>
     <input id="code" name="Code" type="text" >
-    <button id="confirmbutton" type="submit">Verify</button>
+    <button id="confirmbutton" type="submit" >Verify</button>
   </form>
- <p>We've sent a code to the phone number you have provided.</p>
+ <p>Please enter the code we've sent you to the phone number you have provided, so we can activate your account.</p>
  <br>
 
 <span id="timer" style=""></span>

@@ -4,9 +4,9 @@
 
 {% block content %}
   <h2 style="text-align: center">Login</h2>
-  <form method="post" style="text-align: center">
+  <form id="login" method="post" >
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit" style="background-color: darkseagreen">Login</button>
+    <button id="login-button" type="submit" >Login</button>
   </form>
 {% endblock %}

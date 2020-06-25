@@ -9,10 +9,10 @@
 
 </head>
 
-<body style="background-color: #bbccdd">
+<body >
         <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
                 <div class="container">
-                  <a class="navbar-brand" href="{% url 'home' %}" style="font-family: 'Kohinoor Devanagari'">Adaptive security</a>
+                  <a class="navbar-brand" href="{% url 'home' %}" style="font-family: Monaco">Adaptive security</a>
 
                   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainMenu" aria-controls="mainMenu" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -24,9 +24,9 @@
                              Hi {{ user.username }}!
                          <p><a href="{% url 'logout' %}">Logout</a></p>
                          {% else %}
-                            <p style="color: #6DDCBD">You are not logged in</p>
-                                <a href="{% url 'login' %}">Login</a>
-                                <p><a href="{% url 'register' %}">Register</a></p>
+                            <p style="color: lightsalmon">You are not logged in</p>
+                                <a  style="font-weight: bold; color: mediumpurple" href="{% url 'login' %}">Login | </a>
+                                <a style="font-weight: bold; color: mediumpurple" href="{% url 'register' %}">Register</a>
                             {% endif %}
                       </li>
                     </ul>

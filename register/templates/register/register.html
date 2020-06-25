@@ -5,14 +5,15 @@
 {% block content %}
   <h2 style="text-align: center">Sign up</h2>
   <div class="container" style="padding: 30px;">
-  <form method="post">
+  <form id="register" method="post">
     {% csrf_token %}
     {% for field in form %}
       <p>
         {{ field.label_tag }}<br>
         {{ field }}
+      <br>
         {% if field.help_text %}
-          <small style="color: grey">{{ field.help_text }}</small>
+          <small style="color: lightgray;">{{ field.help_text }}</small>
         {% endif %}
         {% for error in field.errors %}
           <p style="color: red">{{ error }}</p>
@@ -20,7 +21,7 @@
       </p>
     {% endfor %}
     {{ phone_form.as_p}}
-    <button type="submit" style="background-color: palegreen">Sign up</button>
+    <button id="login-button"type="submit" >Sign up</button>
   </form>
 </div>
 {% endblock %}
