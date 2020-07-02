@@ -4,6 +4,9 @@
 
 {% block content %}
   <h2 style="text-align: center">Login</h2>
+    {% if AuthenticationForm.errors %}
+    <p>username or password not correct</p>
+{% endif %}
   <form id="login" method="post" >
     {% csrf_token %}
     {{ form.as_p }}

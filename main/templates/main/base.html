@@ -24,9 +24,9 @@
                              Hi {{ user.username }}!
                          <p><a href="{% url 'logout' %}">Logout</a></p>
                          {% else %}
-                            <p style="color: lightsalmon">You are not logged in</p>
-                                <a  style="font-weight: bold; color: mediumpurple" href="{% url 'login' %}">Login | </a>
-                                <a style="font-weight: bold; color: mediumpurple" href="{% url 'register' %}">Register</a>
+                            <p style="color: #e75265">You are not logged in</p>
+                                <a  style="font-weight: bold; color: #ba9be3" href="{% url 'login' %}">Login | </a>
+                                <a style="font-weight: bold; color: #ba9be3" href="{% url 'register' %}">Register</a>
                             {% endif %}
                       </li>
                     </ul>

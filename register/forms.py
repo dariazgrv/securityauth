@@ -4,11 +4,11 @@ from django.contrib.auth.models import User
 from corelogin.models import LoginInfo
 
 class RegisterForm(UserCreationForm):
-    email = forms.EmailField()
+    # email = forms.EmailField()
 
     class Meta:
         model = User
-        fields = ["username","email","password1","password2"]
+        fields = ["username","password1","password2"]
 
 
 class ExtraInfo(forms.ModelForm):

@@ -14,6 +14,7 @@ urlpatterns = [
     # url(r'^login/$', views.login, name="login"),
     path("login/", views.corelogin, name="login"),
     path("2fsecure/<username>/<secureCode>", views.securelogin, name="securelogin"),
+    path("forbidden/", views.frobidden, name="forbidden"),
 
 
 
